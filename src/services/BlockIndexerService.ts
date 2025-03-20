@@ -1,6 +1,9 @@
 import { EventEmitter } from 'events';
 import { db } from '../db';
 import { blockchain } from '../db/schema';
+import { BlockchainService } from './BlockchainService';
+import { ethers } from 'ethers';
+import { BlockchainFactory } from './blockchain/BlockchainFactory';
 
 class BlockIndexerService {
   private isRunning: boolean = false;
@@ -64,9 +67,12 @@ class BlockIndexerService {
       console.log(`Processing ${blockchains.length} blockchains for new blocks...`);
       
       // Process each blockchain in parallel
-      const indexingPromises = blockchains.map(chain => 
-        this.indexBlockchain(chain.id, chain.type)
-      );
+      const indexingPromises = blockchains.map(chain => {
+        // for now only do chains with type evm and chain_id 56
+        if (chain.type === 'evm' && chain.chain_id === '56') {
+          return this.indexBlockchain(chain.chain_id, chain.type);
+        }
+      });
       
       await Promise.all(indexingPromises);
       
@@ -78,24 +84,38 @@ class BlockIndexerService {
 
   /**
    * Index blocks for a specific blockchain
-   * This is where the actual indexing logic would be implemented
    */
-  private async indexBlockchain(blockchainId: number, blockchainType: string): Promise<void> {
+  private async indexBlockchain(chainId: string, blockchainType: string): Promise<void> {
     try {
-      console.log(`Indexing blocks for blockchain ${blockchainId} (${blockchainType})`);
+      console.log(`Indexing blocks for blockchain ${chainId} (${blockchainType})`);
       
-      // TODO: Implement blockchain-specific indexing logic
-      
-      // For now, just log that we would be indexing
-      console.log(`Would index new blocks for blockchain ${blockchainId}`);
-      
-      // Emit an event that can be listened to elsewhere in the application
+      // Get RPC nodes
+      const rpcNodes = await BlockchainService.getRPCs(blockchainType, chainId, 10);
+      if (rpcNodes.length === 0) {
+        throw new Error('No RPC nodes available');
+      }
+
+      // Create blockchain adapter using first RPC node (you might want to implement RPC node selection strategy)
+      const blockchain = BlockchainFactory.create(blockchainType, rpcNodes.map(r => r.url));
+
+      // Get heights
+      const latestBlock = await blockchain.getLatestBlock();
+      const lastSynced = await blockchain.getLastSyncedHeight();
+
+      // Sync new blocks
+      if (latestBlock > lastSynced) {
+        await blockchain.syncBlocks(lastSynced + 1, latestBlock);
+      }
+
       this.eventEmitter.emit('blocksIndexed', {
-        blockchainId,
+        chainId,
+        blockchainType,
+        latestBlock,
+        lastSynced,
         timestamp: new Date()
       });
     } catch (error) {
-      console.error(`Error indexing blockchain ${blockchainId}:`, error);
+      console.error(`Error indexing blockchain ${blockchainType}, ${chainId}:`, error);
     }
   }
 

@@ -12,4 +12,4 @@ const pool = new Pool({
   connectionString: connectionString,
 });
 
-export const db = drizzle(pool, { schema }); 
+export const db = drizzle(pool, { schema });

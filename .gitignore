@@ -30,7 +30,7 @@ yarn-error.log*
 -prisma/migrations/
 
 # Drizzle
-+.drizzle/
+.drizzle/
 
 # Coverage directory
 coverage/

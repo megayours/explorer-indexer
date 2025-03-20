@@ -7,6 +7,9 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@ts-rest/core": "^3.52.1",
+    "@ts-rest/express": "^3.52.1",
+    "@ts-rest/open-api": "^3.52.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.40.1",
@@ -14,7 +17,9 @@
     "express": "^4.21.2",
     "node-cron": "^3.0.3",
     "pg": "^8.14.1",
-    "winston": "^3.17.0"
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.17.0",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
@@ -22,6 +27,7 @@
     "@types/node": "^22.13.10",
     "@types/node-cron": "^3.0.11",
     "@types/pg": "^8.11.11",
+    "@types/swagger-ui-express": "^4.1.8",
     "drizzle-kit": "^0.30.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
@@ -30,11 +36,8 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
-    "start": "node dist/app.js",
-    "init:blockchains": "ts-node src/scripts/initBlockchains.ts",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "ts-node src/db/migrate.ts",
-    "db:drop": "ts-node scripts/dropDatabase.ts",
-    "db:create": "ts-node scripts/createDatabase.ts"
+    "start": "ts-node src/app.ts",
+    "init:blockchains": "ts-node src/scripts/resetDb.ts && ts-node src/scripts/initBlockchains.ts",
+    "db:generate": "drizzle-kit generate"
   }
 }

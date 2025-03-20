@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { BlockchainController } from '../controllers/BlockchainController';
+import { createExpressEndpoints } from '@ts-rest/express';
+import { blockchainContract } from '../api-contracts/blockchain';
+import { blockchainRouter } from '../controllers/BlockchainController';
 
 const router = Router();
-
-// GET endpoint to fetch all blockchains
-router.get('/', BlockchainController.getAllBlockchains);
+createExpressEndpoints(blockchainContract, blockchainRouter, router);
 
 export default router; 

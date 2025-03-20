@@ -3,6 +3,8 @@ import cors from 'cors';
 import blockchainRoutes from './routes/blockchainRoutes';
 import BlockIndexerService from './services/BlockIndexerService';
 import { Pool } from 'pg';
+import { serve, setup } from 'swagger-ui-express';
+import { openApiDocument } from './openapi';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,11 +23,12 @@ app.use(cors({
 
 // Routes
 app.use('/api/blockchains', blockchainRoutes);
+app.use('/api-docs', serve, setup(openApiDocument));
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`API available at: http://localhost:${PORT}/api/blockchains`);
+  console.log(`API Docs available at: http://localhost:${PORT}/api-docs`);
   
   // Start the block indexer
   blockIndexer.start();
