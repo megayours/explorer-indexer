@@ -1,0 +1,40 @@
+{
+  "name": "explorer-indexer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "drizzle-orm": "^0.40.1",
+    "ethers": "^6.13.5",
+    "express": "^4.21.2",
+    "node-cron": "^3.0.3",
+    "pg": "^8.14.1",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.13.10",
+    "@types/node-cron": "^3.0.11",
+    "@types/pg": "^8.11.11",
+    "drizzle-kit": "^0.30.5",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.8.2"
+  },
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "init:blockchains": "ts-node src/scripts/initBlockchains.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "ts-node src/db/migrate.ts",
+    "db:drop": "ts-node scripts/dropDatabase.ts",
+    "db:create": "ts-node scripts/createDatabase.ts"
+  }
+}
