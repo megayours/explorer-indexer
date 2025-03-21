@@ -4,8 +4,8 @@ import { BaseBlockchain } from './BaseBlockchain';
 export class EVMBlockchain extends BaseBlockchain {
   private providers: ethers.JsonRpcProvider[];
 
-  constructor(rpcUrls: string[]) {
-    super(rpcUrls);
+  constructor(rpcUrls: string[], chainId: string) {
+    super(rpcUrls, chainId);
     this.providers = rpcUrls.map(url => new ethers.JsonRpcProvider(url));
   }
 
@@ -14,7 +14,10 @@ export class EVMBlockchain extends BaseBlockchain {
   }
 
   async getLatestBlock(): Promise<number> {
-    return await this.getNextProvider().getBlockNumber();
+    return this.withRetry(async (url) => {
+      const provider = new ethers.JsonRpcProvider(url);
+      return await provider.getBlockNumber();
+    });
   }
 
   async getChainHeight(): Promise<number> {
@@ -28,32 +31,23 @@ export class EVMBlockchain extends BaseBlockchain {
 
   async syncBlocks(fromBlock: number, toBlock: number): Promise<void> {
     for (let blockNumber = fromBlock; blockNumber <= toBlock; blockNumber++) {
-      const provider = this.getNextProvider();
-      const currentUrl = this.getNextRpcUrl(); // Rotate URL for logging
-      
-      // Get block with transactions
-      const block = await provider.getBlock(blockNumber, true);
-      if (!block || !block.transactions.length) continue;
+      await this.withRetry(async (url) => {
+        const provider = new ethers.JsonRpcProvider(url);
+        
+        const block = await provider.getBlock(blockNumber, true);
+        if (!block || !block.transactions.length) return;
 
-      // Get first transaction details
-      const txHash = block.transactions[0];
-      const tx = await provider.getTransaction(txHash);
-      if (!tx) continue;
+        console.log(`Synced EVM block ${blockNumber} using RPC ${url}`);
+        console.log(`  - Transactions: ${block.transactions.length}`);
+        
+        for (const hash of block.transactions) {
+          const tx = await provider.getTransaction(hash);
+          console.log(`    - Transaction: ${hash}`);
+          console.log(`      - Transaction:`, tx);
+        }
 
-      // Get receipt
-      const receipt = await provider.getTransactionReceipt(tx.hash);
-
-      // print summary of the block
-      console.log(`Synced EVM block ${blockNumber} using RPC ${currentUrl}`);
-      console.log(`  - Transactions: ${block.transactions.length}`);
-      for (const hash of block.transactions) {
-        console.log(`    - Transaction: ${hash}`);
-        const tx = await provider.getTransaction(hash);
-        console.log(`      - Transaction:`, tx);
-      }
-
-      // Rate limiting
-      await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      });
     }
   }
 } 

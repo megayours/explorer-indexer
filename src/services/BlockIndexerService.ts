@@ -69,7 +69,7 @@ class BlockIndexerService {
       // Process each blockchain in parallel
       const indexingPromises = blockchains.map(chain => {
         // for now only do chains with type evm and chain_id 56
-        if (chain.type === 'evm' && chain.chain_id === '56') {
+        if (chain.type === 'megayours') { // TODO remove
           return this.indexBlockchain(chain.chain_id, chain.type);
         }
       });
@@ -96,7 +96,7 @@ class BlockIndexerService {
       }
 
       // Create blockchain adapter using first RPC node (you might want to implement RPC node selection strategy)
-      const blockchain = BlockchainFactory.create(blockchainType, rpcNodes.map(r => r.url));
+      const blockchain = BlockchainFactory.create(blockchainType, rpcNodes.map(r => r.url), chainId);
 
       // Get heights
       const latestBlock = await blockchain.getLatestBlock();
