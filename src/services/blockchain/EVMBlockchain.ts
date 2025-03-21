@@ -4,8 +4,8 @@ import { BaseBlockchain } from './BaseBlockchain';
 export class EVMBlockchain extends BaseBlockchain {
   private providers: ethers.JsonRpcProvider[];
 
-  constructor(rpcUrls: string[], chainId: string) {
-    super(rpcUrls, chainId);
+  constructor(rpcUrls: string[], chainId: string, id: number) {
+    super(rpcUrls, chainId, id);
     this.providers = rpcUrls.map(url => new ethers.JsonRpcProvider(url));
   }
 

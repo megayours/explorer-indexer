@@ -4,7 +4,7 @@ export abstract class BaseBlockchain implements BlockchainAdapter {
   protected currentProviderIndex: number = 0;
   protected failedUrls: Set<string> = new Set();
 
-  constructor(protected readonly rpcUrls: string[], protected readonly chainId: string) {
+  constructor(protected readonly rpcUrls: string[], protected readonly chainId: string, protected readonly id: number) {
     if (!rpcUrls.length) {
       throw new Error('No RPC URLs provided');
     }
@@ -47,7 +47,7 @@ export abstract class BaseBlockchain implements BlockchainAdapter {
         const url = this.getNextRpcUrl();
         return await operation(url);
       } catch (error) {
-        lastError = error as Error;
+        lastError = error as Error; 
         this.markUrlAsFailed(this.rpcUrls[this.currentProviderIndex]);
         console.error(`RPC call failed, trying next URL. Error:`, error);
       }

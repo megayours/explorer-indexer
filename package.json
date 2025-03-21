@@ -39,6 +39,7 @@
     "build": "tsc",
     "start": "ts-node src/app.ts",
     "init:blockchains": "ts-node src/scripts/resetDb.ts && ts-node src/scripts/initBlockchains.ts",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate"
   }
 }

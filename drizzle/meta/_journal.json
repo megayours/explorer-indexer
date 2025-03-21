@@ -3,17 +3,24 @@
   "dialect": "postgresql",
   "entries": [
     {
-      "idx": 0,
-      "version": "7",
-      "when": 1742468681072,
-      "tag": "0000_jittery_gunslinger",
-      "breakpoints": true
-    },
-    {
       "idx": 1,
       "version": "7",
       "when": 1742479309326,
       "tag": "0001_bored_blacklash",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1742566785940,
+      "tag": "0002_groovy_purifiers",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1742572124828,
+      "tag": "0003_yellow_union_jack",
       "breakpoints": true
     }
   ]

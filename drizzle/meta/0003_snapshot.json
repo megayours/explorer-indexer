@@ -1,0 +1,307 @@
+{
+  "id": "0b2779df-0ea9-44a1-a237-84b77ec97260",
+  "prevId": "dc1ce197-af14-4e63-ada4-18d522538a85",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.blockchain": {
+      "name": "blockchain",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chain_id": {
+          "name": "chain_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "blockchain_chain_id_unique": {
+          "name": "blockchain_chain_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "chain_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.megayours_block": {
+      "name": "megayours_block",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "blockchain_id": {
+          "name": "blockchain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rid": {
+          "name": "rid",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prev_block_rid": {
+          "name": "prev_block_rid",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "header": {
+          "name": "header",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "height": {
+          "name": "height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "witness": {
+          "name": "witness",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "timestamp": {
+          "name": "timestamp",
+          "type": "bigint",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "megayours_block_blockchain_id_blockchain_id_fk": {
+          "name": "megayours_block_blockchain_id_blockchain_id_fk",
+          "tableFrom": "megayours_block",
+          "tableTo": "blockchain",
+          "columnsFrom": [
+            "blockchain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "megayours_block_rid_unique": {
+          "name": "megayours_block_rid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "rid"
+          ]
+        },
+        "megayours_block_header_unique": {
+          "name": "megayours_block_header_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "header"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.rpc_node": {
+      "name": "rpc_node",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "blockchain_id": {
+          "name": "blockchain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "rpc_node_blockchain_id_blockchain_id_fk": {
+          "name": "rpc_node_blockchain_id_blockchain_id_fk",
+          "tableFrom": "rpc_node",
+          "tableTo": "blockchain",
+          "columnsFrom": [
+            "blockchain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transactions": {
+      "name": "transactions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "block_id": {
+          "name": "block_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rid": {
+          "name": "rid",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hash": {
+          "name": "hash",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transactions_block_id_megayours_block_id_fk": {
+          "name": "transactions_block_id_megayours_block_id_fk",
+          "tableFrom": "transactions",
+          "tableTo": "megayours_block",
+          "columnsFrom": [
+            "block_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.witnesses": {
+      "name": "witnesses",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "blockchain_id": {
+          "name": "blockchain_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "witness_pubkey": {
+          "name": "witness_pubkey",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "signature": {
+          "name": "signature",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "witnesses_blockchain_id_blockchain_id_fk": {
+          "name": "witnesses_blockchain_id_blockchain_id_fk",
+          "tableFrom": "witnesses",
+          "tableTo": "blockchain",
+          "columnsFrom": [
+            "blockchain_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

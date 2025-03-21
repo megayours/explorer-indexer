@@ -70,7 +70,7 @@ class BlockIndexerService {
       const indexingPromises = blockchains.map(chain => {
         // for now only do chains with type evm and chain_id 56
         if (chain.type === 'megayours') { // TODO remove
-          return this.indexBlockchain(chain.chain_id, chain.type);
+          return this.indexBlockchain(chain.chain_id, chain.type, chain.id);
         }
       });
       
@@ -85,7 +85,7 @@ class BlockIndexerService {
   /**
    * Index blocks for a specific blockchain
    */
-  private async indexBlockchain(chainId: string, blockchainType: string): Promise<void> {
+  private async indexBlockchain(chainId: string, blockchainType: string, rowId: number): Promise<void> {
     try {
       console.log(`Indexing blocks for blockchain ${chainId} (${blockchainType})`);
       
@@ -96,24 +96,24 @@ class BlockIndexerService {
       }
 
       // Create blockchain adapter using first RPC node (you might want to implement RPC node selection strategy)
-      const blockchain = BlockchainFactory.create(blockchainType, rpcNodes.map(r => r.url), chainId);
+      const blockchain = BlockchainFactory.create(blockchainType, rpcNodes.map(r => r.url), chainId, rowId);
+      const currentHeight = await blockchain.getChainHeight();
 
       // Get heights
-      const latestBlock = await blockchain.getLatestBlock();
       const lastSynced = await blockchain.getLastSyncedHeight();
 
       // Sync new blocks
-      if (latestBlock > lastSynced) {
-        await blockchain.syncBlocks(lastSynced + 1, latestBlock);
+      if (currentHeight > lastSynced) {
+        await blockchain.syncBlocks(lastSynced + 1, currentHeight);
       }
 
-      this.eventEmitter.emit('blocksIndexed', {
-        chainId,
-        blockchainType,
-        latestBlock,
-        lastSynced,
-        timestamp: new Date()
-      });
+      // this.eventEmitter.emit('blocksIndexed', {
+      //   chainId,
+      //   blockchainType,
+      //   latestBlock,
+      //   lastSynced,
+      //   timestamp: new Date()
+      // });
     } catch (error) {
       console.error(`Error indexing blockchain ${blockchainType}, ${chainId}:`, error);
     }
